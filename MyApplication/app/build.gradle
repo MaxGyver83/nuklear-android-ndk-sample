@@ -1,15 +1,17 @@
-import org.apache.tools.ant.taskdefs.condition.Os
-
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 18
-    buildToolsVersion "23.0.1"
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    compileSdkVersion 35
+    buildToolsVersion "35.0.0"
 
     defaultConfig {
         applicationId "com.example.yt.myapplication"
-        minSdkVersion 15
-        targetSdkVersion 15
+        minSdkVersion 21
+        targetSdkVersion 35
         versionCode 1
         versionName "1.0"
     }
@@ -39,14 +41,26 @@ android {
         workingDir file('src/main')
         commandLine getNdkBuildCmd(), 'clean'
     }
+    ndkVersion '27.1.12297006'
+
+    namespace 'com.example.yt.myapplication'
+    testNamespace 'com.example.yt.myapplication.test'
 
     clean.dependsOn cleanNative
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    testCompile 'junit:junit:4.12'
-    compile 'com.android.support:appcompat-v7:18.0.0'
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    testImplementation 'junit:junit:4.13.2'
+    constraints {
+        implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.0") {
+            because("kotlin-stdlib-jdk7 is now a part of kotlin-stdlib")
+        }
+        implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.0") {
+            because("kotlin-stdlib-jdk8 is now a part of kotlin-stdlib")
+        }
+    }
+    implementation 'androidx.appcompat:appcompat:1.7.0'
 }
 
 def getNdkDir() {
@@ -57,14 +71,15 @@ def getNdkDir() {
     properties.load(project.rootProject.file('local.properties').newDataInputStream())
     def ndkdir = properties.getProperty('ndk.dir', null)
     if (ndkdir == null)
-        throw new GradleException("NDK location not found. Define location with ndk.dir in the local.properties file or with an ANDROID_NDK_ROOT environment variable.")
+        throw new FileNotFoundException("NDK location not found. Define location with ndk.dir in the local.properties file or with an ANDROID_NDK_ROOT environment variable.")
 
     return ndkdir
 }
 
 def getNdkBuildCmd() {
     def ndkbuild = getNdkDir() + "/ndk-build"
-    if (Os.isFamily(Os.FAMILY_WINDOWS))
+    String osName = System.getProperty("os.name").toLowerCase()
+    if (osName.contains("windows"))
         ndkbuild += ".cmd"
 
     return ndkbuild

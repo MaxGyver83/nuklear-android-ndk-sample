@@ -1,9 +1,7 @@
 package com.example.yt.myapplication;
 
-import android.app.Application;
-import android.content.Context;
 import android.opengl.GLSurfaceView;
-import android.support.v7.app.ActionBarActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Window;
 import android.view.WindowManager;
@@ -40,16 +38,14 @@ class DemoProjectRenderer implements GLSurfaceView.Renderer {
     }
 }
 
-public class MainActivity extends ActionBarActivity {
-
-    private GLSurfaceView view;
+public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
 
-        view = new GLSurfaceView(getApplicationContext());
+        GLSurfaceView view = new GLSurfaceView(getApplicationContext());
 
         // Tell EGL to use a ES 2.0 Context
         view.setEGLContextClientVersion(2);
